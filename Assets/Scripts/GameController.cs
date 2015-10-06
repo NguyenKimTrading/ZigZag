@@ -42,6 +42,17 @@ public class GameController : MonoBehaviour {
 		Application.LoadLevel (Application.loadedLevel);
 	}
 
+	public void RateGame(){
+		#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER
+		Application.OpenURL("http://www.nguyenkim.com");
+		#elif UNITY_ANDROID
+		//Application.OpenURL("market://details?id=com.nguyenkim.zigzag");
+		Application.OpenURL("https://play.google.com/store/apps/details?id=com.nguyenkim.zigzag");
+		#elif UNITY_IPHONE
+		Application.OpenURL("itms-apps://itunes.apple.com/us/app/zigzag-and-the-ball/id1023106262?ls=1&mt=8");
+		#endif
+	}
+
     private void PlayTapSound()
     {
         if (TapAudio != null)
@@ -129,7 +140,7 @@ public class GameController : MonoBehaviour {
     void DisplayBestScore()
     {
         int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
-        TextBestScore.text = "Best Score: " + Bestscore.ToString();
+        TextBestScore.text = "Best: " + Bestscore.ToString();
     }
 	void UpdateBestScore(){
 		int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
