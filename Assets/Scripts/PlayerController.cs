@@ -93,20 +93,13 @@ public class PlayerController : MonoBehaviour {
 
 	public void TurnDirection() {
 		if (this.verlocityUnitVector == Vector3.right) {
-            PlaySound();
 			this.verlocityUnitVector = Vector3.forward;
 		}
 		else if (this.verlocityUnitVector == Vector3.forward) {
-            PlaySound();
 			this.verlocityUnitVector = Vector3.right;
 		}
 	}
-
-    private void PlaySound()
-    {
-        GetComponent<AudioSource>().Play();
-    }
-
+	
 	private enum Status {
 		Wating,
 		/// <summary>

@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{753BC2A2-3680-5CB5-3DA2-FD6C2D109E70}</ProjectGuid>
+	<ProjectGuid>{89D0018C-144E-E439-DCB5-71C45EDF51B0}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_5_1_1;UNITY_5_1;UNITY_5;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNET;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_LICENSE;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_EDITOR_METRICS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;INCLUDE_DIRECTX12;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_LOCALIZATION;UNITY_ANDROID;UNITY_ANDROID_API;ENABLE_SUBSTANCE;ENABLE_TEXTUREID_MAP;ENABLE_EGL;ENABLE_NETWORK;ENABLE_RUNTIME_GI;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_MONO;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_5_1_1;UNITY_5_1;UNITY_5;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNET;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_LICENSE;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_EDITOR_METRICS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;INCLUDE_DIRECTX12;PLATFORM_SUPPORTS_MONO;ENABLE_LOCALIZATION;UNITY_IPHONE;ENABLE_RUNTIME_GI;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_NETWORK;UNITY_IPHONE_API;UNITY_IOS;ENABLE_TEXTUREID_MAP;PLAYERCONNECTION_LISTENS_FIXED_PORT;DEBUGGER_LISTENS_FIXED_PORT;ENABLE_IL2CPP;DEVELOPMENT_BUILD;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -46,10 +46,95 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Examples\Scripts\ConsoleBase.cs" />
+     <Compile Include="Assets\Examples\Scripts\LogView.cs" />
+     <Compile Include="Assets\Examples\Scripts\MenuBase.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\AppEvents.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\AppInvites.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\AppLinks.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\AppRequests.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\DialogShare.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\GameGroups.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\GraphRequest.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\MainMenu.cs" />
+     <Compile Include="Assets\Examples\Scripts\SubMenus\Pay.cs" />
+     <Compile Include="Assets\Facebook\Scripts\AccessToken.cs" />
+     <Compile Include="Assets\Facebook\Scripts\AppEventName.cs" />
+     <Compile Include="Assets\Facebook\Scripts\AppEventParameterName.cs" />
+     <Compile Include="Assets\Facebook\Scripts\CallbackManager.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\CanvasFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\CanvasFacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\CanvasFacebookLoader.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\ICanvasFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\ICanvasFacebookCallbackHandler.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\ICanvasFacebookImplementation.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Canvas\JsBridge.cs" />
+     <Compile Include="Assets\Facebook\Scripts\ComponentFactory.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Constants.cs" />
+     <Compile Include="Assets\Facebook\Scripts\FB.cs" />
+     <Compile Include="Assets\Facebook\Scripts\FacebookBase.cs" />
+     <Compile Include="Assets\Facebook\Scripts\FacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\FacebookSdkVersion.cs" />
+     <Compile Include="Assets\Facebook\Scripts\FacebookSettings.cs" />
+     <Compile Include="Assets\Facebook\Scripts\IFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\IFacebookCallbackHandler.cs" />
+     <Compile Include="Assets\Facebook\Scripts\IFacebookImplementation.cs" />
+     <Compile Include="Assets\Facebook\Scripts\MethodArguments.cs" />
+     <Compile Include="Assets\Facebook\Scripts\MethodCall.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\Android\AndroidFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\Android\AndroidFacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\Android\AndroidFacebookLoader.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\Android\FBJavaClass.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\Android\IAndroidJavaClass.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IMobileFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IMobileFacebookCallbackHandler.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IMobileFacebookImplementation.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IOS\IOSFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IOS\IOSFacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\IOS\IOSFacebookLoader.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\MobileFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Mobile\MobileFacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\NativeDialogModes.cs" />
+     <Compile Include="Assets\Facebook\Scripts\OGActionType.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\EditorFacebook.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\EditorFacebookGameObject.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\EditorFacebookLoader.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\EditorFacebookMockDialog.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\MockDialogs\EmptyMockDialog.cs" />
+     <Compile Include="Assets\Facebook\Scripts\PlatformEditor\MockDialogs\MockLoginDialog.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Properties\AssemblyInfo.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\AppInviteResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\AppLinkResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\AppReqeustResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\GraphResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\GroupCreateResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\GroupJoinResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IAppInviteResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IAppLinkResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IAppRequestResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IGraphResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IGroupCreateResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IGroupJoinResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IInternalResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\ILoginResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IPayResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\IShareResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\LoginResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\PayResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\ResultBase.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Results\ShareResult.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\AsyncRequestString.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\FacebookLogger.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\HttpMethod.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\IFacebookLogger.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\MiniJson.cs" />
+     <Compile Include="Assets\Facebook\Scripts\Utils\Utilities.cs" />
      <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\ZigZagCreator.cs" />
+     <None Include="Assets\Facebook\Scripts\Canvas\Resources\JSSDKBindings.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -58,6 +143,9 @@
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="Newtonsoft.Json">
+ <HintPath>D:/nguyenkim/svn/SourceCode/Mobile/ZigZag/Tier1/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
