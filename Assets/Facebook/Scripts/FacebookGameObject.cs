@@ -48,8 +48,8 @@ namespace Facebook.Unity
 
         public void OnInitComplete(string message)
         {
+			this.Initialized = true;
             this.Facebook.OnInitComplete(message);
-            this.Initialized = true;
         }
 
         public void OnLoginComplete(string message)

@@ -139,9 +139,17 @@ namespace Facebook.Unity.Example
 
         private void OnInitComplete()
         {
-            this.Status = "Success - Check logk for details";
+            this.Status = "Success - Check log for details";
             this.LastResponse = "Success Response: OnInitComplete Called\n";
             LogView.AddLog("OnInitComplete Called");
+
+			if (FB.IsInitialized) {
+				Debug.Log("Initted the Facebook SDK");
+				// Signal an app activation App Event
+				FB.ActivateApp();
+			} else {
+				Debug.Log("Failed to Initialize the Facebook SDK");
+			}
         }
 
         private void OnHideUnity(bool isGameShown)
