@@ -6,9 +6,9 @@ public class PlayerController : MonoBehaviour {
 	/// <summary>
 	/// The speed of player.
 	/// </summary>
-	public float speed = 8f;
+	public float speed = 10f;
 
-	public float acceleration = 0.01f;
+	public float acceleration = 0.05f;
 
 	/// <summary>
 	/// The status of player.
@@ -22,6 +22,12 @@ public class PlayerController : MonoBehaviour {
 
 	private Vector3 startPosition;
 
+	private IDictionary logger = null;
+	private System.Collections.Generic.List<float> turnat = new System.Collections.Generic.List<float>();
+
+	public void SetLogger(IDictionary logger){
+		this.logger = logger;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -53,12 +59,15 @@ public class PlayerController : MonoBehaviour {
 
     public void Run()
     {
+		if (logger!= null) logger["beginat"] = Time.time;
         this._status = Status.Running;
         this.verlocityUnitVector = Vector3.right;
     }
 
     public void Stop()
     {
+		if (logger!= null) logger["endat"] = Time.time;
+		if (logger!= null) logger["turnat"] = turnat;
         this._status = Status.Stoped;
     }
 	
@@ -85,13 +94,14 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if (this._status == Status.Falling) {
-			if (transform.position.y < -100f) {
+			if (transform.position.y < - 50f) {
 				this.gameObject.SetActive(false);
 			}
 		}
 	}
 
 	public void TurnDirection() {
+		turnat.Add (Time.time);
 		if (this.verlocityUnitVector == Vector3.right) {
 			this.verlocityUnitVector = Vector3.forward;
 		}
@@ -115,4 +125,11 @@ public class PlayerController : MonoBehaviour {
         /// </summary>
         Stoped
 	}
+}
+
+public class GameLog{
+	public string beginat;
+	public string fallat;
+	public string endat;
+	public System.Collections.Generic.LinkedList<string> turnat = new System.Collections.Generic.LinkedList<string>();
 }

@@ -1,9 +1,11 @@
 ﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GameController.cs">
     <Files>
-      <File FileName="Assets\Scripts\GameController.cs" Line="183" Column="44" />
-      <File FileName="Assets\Facebook\Scripts\Utils\Utilities.cs" Line="61" Column="1" />
+      <File FileName="Assets\Scripts\GameController.cs" Line="513" Column="6" />
+      <File FileName="Assets\Scripts\PlayerController.cs" Line="70" Column="45" />
+      <File FileName="Assets\Scripts\ZigZagCreator.cs" Line="66" Column="36" />
+      <File FileName="Assets\Scripts\Notification.cs" Line="27" Column="39" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
@@ -14,18 +16,9 @@
       <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Examples\Scripts\SubMenus\MainMenu.cs" line="41" />
       <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Examples\Scripts\SubMenus\MainMenu.cs" line="142" />
       <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Examples\Scripts\SubMenus\MainMenu.cs" line="157" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="276" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="85" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="50" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="289" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="160" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="123" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="459" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="435" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="204" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="150" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="221" />
-      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="234" />
+      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="227" />
+      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="244" />
+      <Breakpoint file="D:\nguyenkim\svn\SourceCode\Mobile\ZigZag\Tier1\Assets\Scripts\GameController.cs" line="257" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

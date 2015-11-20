@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Facebook.Unity;
 using Facebook.MiniJSON;
+using Unity.IO.Compression;
 
 /// <summary>
 /// Game controller.
@@ -13,12 +14,9 @@ public class GameController : MonoBehaviour {
     private string BEST_SCORE = "bestscore";
 
 	private GameStatus status;
-
-	/// <summary>
-	/// Reference to player.
-	/// </summary>
-	public GameObject player;
-	private PlayerController playerController;
+	
+	public PlayerController playerController;
+	public ZigZagCreator zigzagCreator;
 		
 	public GameObject PanelGameOver;
 	public Text TextTapToPlay;
@@ -40,13 +38,21 @@ public class GameController : MonoBehaviour {
 	public InputField infPhone;
 	public InputField infIdentifier;
 
+	public Notification notification;
 
-    private int _Score;
+    private int score;
     private AudioSource TapAudio;
     private AudioSource GameOverAudio;
 
+	private IDictionary logger = new System.Collections.Generic.Dictionary<string,object>();
+
 	void Awake ()
 	{
+		this.TapAudio = GetComponents<AudioSource>()[0];
+		this.GameOverAudio = GetComponents<AudioSource>()[1];
+		this.playerController.SetLogger (this.logger);
+		this.zigzagCreator.SetLogger (this.logger);
+
 		if (!FB.IsInitialized) {
 			// Initialize the Facebook SDK
 			FB.Init(InitCallback, OnHideUnity);
@@ -54,10 +60,9 @@ public class GameController : MonoBehaviour {
 			// Already initialized, signal an app activation App Event
 			if (!FB.IsLoggedIn) {
 				FB.ActivateApp();
-			} else {
-				DisplayUserInfo();
 			}
 		}
+		DisplayUserInfo();
 	}
 
 	private void InitCallback ()
@@ -81,45 +86,50 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public void Login() {
+	public void Login(){
+		this.Login (null);
+	}
+
+	public void Login(FacebookDelegate<ILoginResult> loginCallback = null) {
 		if (FB.IsInitialized) {
 			if (!FB.IsLoggedIn) {
 				var perms = new List<string> (){"public_profile", "email", "user_friends"};
-				FB.LogInWithReadPermissions (perms, AuthCallback);
+				FB.LogInWithReadPermissions (perms, (ILoginResult result)=>{
+					if (FB.IsLoggedIn) {
+						// AccessToken class will have session details
+						var aToken = AccessToken.CurrentAccessToken;
+						// Print current access token's User ID
+						Debug.Log(aToken.UserId);
+						Debug.Log(aToken.TokenString);
+						FB.API ("/me?fields=id,name,email,picture", Facebook.Unity.HttpMethod.GET, (graphResult)=>{
+							if (graphResult != null){
+								var abc = graphResult.ResultDictionary;
+								string fbid = abc["id"].ToString();
+								string name = abc["name"].ToString();
+								string email = abc["email"].ToString();
+								var picture = abc["picture"] as IDictionary<string, object>;
+								var data = picture["data"] as IDictionary<string, object>;
+								var pictureURL = data["url"].ToString();
+								StartCoroutine(LoginToNK(fbid,name,email,pictureURL,aToken.TokenString,(o)=>{
+									if (loginCallback != null) loginCallback(result);
+								}));
+							}
+							else {
+								Alert("Cannot retrieve user info");
+							}
+						});
+					} else {
+						Alert("User cancelled login");
+					}
+				});
 			} else {
 				Logout ();
 			}
 		} 
 	}
 
-	private void AuthCallback (ILoginResult result) {
-		if (FB.IsLoggedIn) {
-			// AccessToken class will have session details
-			var aToken = AccessToken.CurrentAccessToken;
-			// Print current access token's User ID
-			Debug.Log(aToken.UserId);
-			Debug.Log(aToken.TokenString);
-			FB.API ("/me?fields=id,name,email,picture", Facebook.Unity.HttpMethod.GET, (graphResult)=>{
-				if (graphResult != null){
-					var abc = graphResult.ResultDictionary;
-					string fbid = abc["id"].ToString();
-					string name = abc["name"].ToString();
-					string email = abc["email"].ToString();
-					var picture = abc["picture"] as IDictionary<string, object>;
-					var data = picture["data"] as IDictionary<string, object>;
-					var pictureURL = data["url"].ToString();
-					StartCoroutine(LoginToNK(fbid,name,email,pictureURL,aToken.TokenString));
-				}
-				else {
-					Alert("Cannot retrieve user info");
-				}
-			});
-		} else {
-			Alert("User cancelled login");
-		}
-	}
-
-	IEnumerator LoginToNK(string fbid, string name, string email, string pictureURL, string accessToken) {
+	IEnumerator LoginToNK(string fbid, string name, string email, string pictureURL, string accessToken
+	                      , FacebookDelegate<object> loginCallback = null) {
 		if (name != null && email != null && accessToken != null) {
 			string loginURL = "http://event.nguyenkim.com/game/login.json";
 			// Create a form object for sending high score data to the server
@@ -143,7 +153,7 @@ public class GameController : MonoBehaviour {
 				string resultStatus = result.GetValueOrDefault<string>("status");
 				if (resultStatus == "error") 
 				{
-					Debug.Log("Error: " + result["message"]);
+					Alert(result.GetValueOrDefault<string>("message"));
 				} 
 				else if (resultStatus == "success") 
 				{
@@ -161,6 +171,8 @@ public class GameController : MonoBehaviour {
 						Rect r = new Rect (0f,0f,pic.width,pic.height);
 						userPictureProfile.sprite = CurrentUser.pictureProfile = Sprite.Create(pic, r, v);
 						DisplayUserInfo();
+						Alert("Wellcom " + CurrentUser.name);
+						if (loginCallback != null) loginCallback(null);
 					}));
 				}
 			}
@@ -177,12 +189,17 @@ public class GameController : MonoBehaviour {
 	}
 
 	void DisplayUserInfo(){
-		txtPlayerName.text = CurrentUser.name; // Hien thi ten
-		txtPlayerEmail.text = CurrentUser.email; // Hien thi email
-		infName.text = CurrentUser.name; // Gan ten cho textbox
-		infPhone.text = CurrentUser.phone; // Gan phone cho text box
-		infIdentifier.text = CurrentUser.cardId; // Gan cardid cho text box
-		userPictureProfile.sprite = CurrentUser.pictureProfile; // Hien thi hinh nguoi dung
+		txtPlayerName.text = string.IsNullOrEmpty(CurrentUser.name) ? string.Empty : CurrentUser.name; // Hien thi ten
+		txtPlayerEmail.text = string.IsNullOrEmpty(CurrentUser.email) ? string.Empty : CurrentUser.email; // Hien thi email
+		infName.text = string.IsNullOrEmpty(CurrentUser.name) ? string.Empty : CurrentUser.name; // Gan ten cho textbox
+		infPhone.text = string.IsNullOrEmpty(CurrentUser.phone) ? string.Empty : CurrentUser.phone; // Gan phone cho text box
+		infIdentifier.text = string.IsNullOrEmpty(CurrentUser.cardId) ? string.Empty : CurrentUser.cardId; // Gan cardid cho text box
+		if (CurrentUser.pictureProfile != null && CurrentUser.pictureProfile != this.userPictureProfileDefault) {
+			userPictureProfile.sprite = CurrentUser.pictureProfile; // Hien thi hinh nguoi dung
+			userPictureProfile.gameObject.SetActive (true);
+		} else {
+			userPictureProfile.gameObject.SetActive (false);
+		}
 		if (FB.IsLoggedIn) {
 			var txt  = btnLogin.GetComponentInChildren(typeof(UnityEngine.UI.Text)) as UnityEngine.UI.Text;
 			if (txt!= null) txt.text = "Log out"; // Thay doi text cua button
@@ -190,6 +207,15 @@ public class GameController : MonoBehaviour {
 			var txt  = btnLogin.GetComponentInChildren(typeof(UnityEngine.UI.Text)) as UnityEngine.UI.Text;
 			if (txt!= null) txt.text = "Log in"; // Thay doi text cua button
 		}
+	}
+
+	private void HideUserInfo(){
+		txtPlayerName.text = string.Empty; // Hien thi ten
+		txtPlayerEmail.text = string.Empty; // Hien thi email
+		infName.text = string.Empty; // Gan ten cho textbox
+		infPhone.text = string.Empty; // Gan phone cho text box
+		infIdentifier.text = string.Empty; // hide cardid cho text box
+		userPictureProfile.gameObject.SetActive (false); // Hide picture profile
 	}
 
 	public void Edit(){
@@ -287,11 +313,7 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		this.status = GameStatus.MainMenu;
-		this.playerController = player.GetComponent<PlayerController> ();
-        this.TapAudio = GetComponents<AudioSource>()[0];
-        this.GameOverAudio = GetComponents<AudioSource>()[1];
-        this._Score = 0;
-        DisplayScore();
+        this.score = 0;
         DisplayBestScore();
         this.PanelGameOver.SetActive(false);
 	}
@@ -299,6 +321,10 @@ public class GameController : MonoBehaviour {
 	public void Replay() {
         PlayTapSound();
 		Application.LoadLevel (Application.loadedLevel);
+	}
+
+	public void Scoreboard(){
+
 	}
 
 	public void RateGame(){
@@ -331,6 +357,8 @@ public class GameController : MonoBehaviour {
 		this.status = GameStatus.Game;
 		this.TextTapToPlay.text = "Tap to play";
 		this.pnlMenu.SetActive (false);
+		this.HideUserInfo ();
+		this.HideBestScore ();
 	}
 
     private float nextFire;
@@ -380,10 +408,10 @@ public class GameController : MonoBehaviour {
             }
 #endif
 			// Cap nhat diem
-			int score = Mathf.RoundToInt(this.player.transform.position.x + this.player.transform.position.z);
-			if (score != this._Score)
+			int score = Mathf.RoundToInt(this.playerController.transform.position.x + this.playerController.transform.position.z);
+			if (score != this.score)
 			{
-				this._Score = score;
+				this.score = score;
 				DisplayScore(); // Hien thi diem
 			}
         }
@@ -403,36 +431,52 @@ public class GameController : MonoBehaviour {
 	}
 
 	void DisplayScore () {
-		TextScore.text = this._Score.ToString();
+		TextScore.text = this.score.ToString();
 	}
 
     void DisplayBestScore()
     {
         int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
-        TextBestScore.text = "Best: " + Bestscore.ToString();
+		if (Bestscore>0) TextBestScore.text = "Best Score: " + Bestscore.ToString();
+		else TextBestScore.text = string.Empty;
     }
+
 	void UpdateBestScore(){
 		int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
-		if (this._Score > Bestscore)
-		{
-			PlayerPrefs.SetInt(BEST_SCORE, this._Score);
-			DisplayBestScore();
-		}
+		if (this.score > Bestscore) PlayerPrefs.SetInt(BEST_SCORE, this.score);
+	}
+
+	void HideBestScore(){
+		TextBestScore.text = string.Empty;
 	}
 
 	void DisplayScoreResult(){
 		int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
-		if (this._Score > Bestscore) {
-			TextBestScoreResult.text = "New Best Score: " + this._Score;
+		if (this.score > Bestscore) {
+			TextBestScoreResult.text = "New Best Score: " + this.score;
 			// Submit score to server
 		} else {
-			TextBestScoreResult.text = "Score: " + this._Score;
+			TextBestScoreResult.text = "Score: " + this.score +"\nBest Score: " + Bestscore;
 		}
-		StartCoroutine(SubmitScore (2, this._Score));
 	}
 
-	IEnumerator SubmitScore(int userId, int score) {
-		if (AccessToken.CurrentAccessToken != null) {
+	public void Submit(){
+		if (!FB.IsLoggedIn) {
+			Login((ILoginResult loginResult) => {
+				if (FB.IsLoggedIn) {
+					StartCoroutine(SubmitScore(CurrentUser.id, this.score));
+				}
+			});
+		} else {
+			StartCoroutine(SubmitScore(CurrentUser.id, this.score));
+		}
+	}
+	bool submitted = false;
+	IEnumerator SubmitScore(string userId, int score) {
+		if (submitted) {
+			Alert ("Submitted");
+		}
+		else if (AccessToken.CurrentAccessToken != null) {
 			string highscore_url = "http://event.nguyenkim.com/game/submit_point.json";
 			// Create a form object for sending high score data to the server
 			WWWForm form = new WWWForm();
@@ -440,16 +484,20 @@ public class GameController : MonoBehaviour {
 			// Assuming the perl script manages high scores for different games
 			form.AddField ("CpMobileGamePoint[game_id]", 4);
 			// The name of the player submitting the scores
-			form.AddField ("CpMobileGamePoint[user_id]", AccessToken.CurrentAccessToken.UserId);
+			form.AddField ("CpMobileGamePoint[user_id]", userId);
 			// The score
 			form.AddField ("CpMobileGamePoint[point]", score);
 			// Access Token
 			form.AddField ("access_token", AccessToken.CurrentAccessToken.TokenString);
-			// The log
-			var log = string.Format("This is a log. UserId: '{0}'. Access Token: '{1}'", 
-			                        AccessToken.CurrentAccessToken.UserId,
-			                        AccessToken.CurrentAccessToken.TokenString);
-			form.AddField ("CpMobileGamePoint[log]", log);
+			// Add score to log
+			this.logger["score"] = this.score;
+			var jsonLog = Json.Serialize(this.logger);
+			// Compress log with gzip
+			var binLog = Compress(jsonLog);
+			string base64Log = System.Convert.ToBase64String (binLog);
+			//byte[] decodedBinLog = System.Convert.FromBase64String (base64Log);
+			//var decodedLog = Decompress(decodedBinLog);
+			form.AddField ("CpMobileGamePoint[log]", base64Log);
 			// The status
 			form.AddField ("CpMobileGamePoint[status]", 1);
 			// Create a download object
@@ -457,23 +505,47 @@ public class GameController : MonoBehaviour {
 			// Wait until the download is done
 			yield return download;
 			if(!string.IsNullOrEmpty(download.error)) {
-				Debug.Log( "Error: " + download.error );
+				Alert(download.error );
 			} else {
 				var resultJsonString = download.text.Substring(download.text.IndexOf("{"));
 				var result = Json.Deserialize(resultJsonString) as IDictionary<string, object>;
 				var resultStatus = (string)result["status"];
 				if (resultStatus == "error") 
 				{
-					Debug.Log("Error: " + result["message"]);
+					Alert(result.GetValueOrDefault<string>("message"));
 				} else if (resultStatus == "success") 
 				{
-					Debug.Log("Success: " + result["message"]);
+					submitted = true;
+					Alert(result.GetValueOrDefault<string>("message"));
 				}
 			}
 		}
 	}
 
-    void GameOver()
+	private byte[] Compress(string str){
+		using (var memoryStrem = new System.IO.MemoryStream()){
+			using (var gzipStream = new GZipStream(memoryStrem,CompressionMode.Compress)) {
+				using (var writer = new System.IO.StreamWriter(gzipStream)){
+					writer.Write(str);
+				}
+			}
+			return memoryStrem.ToArray();
+		}
+	}
+
+	private string Decompress(byte[] bin){
+		string str;
+		using (var stream = new System.IO.MemoryStream(bin)) {
+			using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress)) {
+				using (var reader = new System.IO.StreamReader(gzipStream)) {
+					str = reader.ReadToEnd();
+				}
+			}
+		}
+		return str;
+	}
+	
+	void GameOver()
     {
 		this.status = GameStatus.GameOver;
         PlayGameOverSound();
@@ -481,6 +553,68 @@ public class GameController : MonoBehaviour {
 		UpdateBestScore ();
 		this.PanelGameOver.SetActive (true);
 		this.PanelGameOver.GetComponent<Animator>().Play("Open");
+	}
+
+	public void Share() {
+		if (FB.IsLoggedIn) {
+			int bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
+			FB.FeedShare (
+				null, // toId
+				new System.Uri ("http://event.nguyenkim.com/mobile/zigzag/share.php?score="+this.score+"&bestscore="+bestscore), // link
+				"ZigZag and the ball", // linkName
+				"My score: " + this.score + ". Let's play!", // linkCaption
+				"Tap the screen to change the direction of the ball.", // linkDescription
+				new System.Uri ("http://event.nguyenkim.com/mobile/zigzag/sharepicture.php?score="+this.score+"&bestscore="+bestscore), // picture
+				null, // mediaSource
+				(IShareResult shareResult)=> {
+					if (shareResult.Cancelled) {
+						this.Alert("User Cancelled"); // User Cancelled
+					} else if (!string.IsNullOrEmpty(shareResult.Error)) {
+						this.Alert(shareResult.Error);
+					} else {
+						var postId = string.IsNullOrEmpty(shareResult.PostId) ? "id_null" : shareResult.PostId;
+						StartCoroutine(PostShare(postId,CurrentUser.id,CurrentUser.fbId,AccessToken.CurrentAccessToken.TokenString));
+					}
+				}
+			);
+		} else {
+			this.Login((loginResult) => {
+				if (FB.IsLoggedIn && !loginResult.Cancelled && string.IsNullOrEmpty(loginResult.Error)) {
+					Share();
+				}
+			});
+		}
+	}
+
+	private IEnumerator PostShare (string postId, string userId, string fb_user_id, string access_token) {
+		string postShare_url = "http://event.nguyenkim.com/game/IasUserShared.json";
+		// Create a form object for sending high score data to the server
+		WWWForm form = new WWWForm();
+		form.AddField ("gameId", 4);
+		// Assuming the perl script manages high scores for different games
+		form.AddField ("fb_share_post_id", postId);
+		// The name of the player submitting the scores
+		form.AddField ("userId", userId);
+		// The score
+		form.AddField ("fb_user_id", fb_user_id);
+		// Access Token
+		form.AddField ("access_token", access_token);
+		// Create a download object
+		WWW submit = new WWW( postShare_url, form );
+		// Wait until the download is done
+		yield return submit;
+		if(!string.IsNullOrEmpty(submit.error)) {
+			Alert(submit.error);
+		} else {
+			var resultJsonString = submit.text.Substring(submit.text.IndexOf("{"));
+			var result = Json.Deserialize(resultJsonString) as IDictionary<string, object>;
+			var resultStatus = (string)result.GetValueOrDefault<string>("status");
+			if (resultStatus == "error") {
+				Alert(result.GetValueOrDefault<string>("message"));
+			} else if (resultStatus == "success") {
+				Alert(result.GetValueOrDefault<string>("message"));
+			}
+		}
 	}
 
     private void PlayGameOverSound()
@@ -493,6 +627,7 @@ public class GameController : MonoBehaviour {
 
 	private void Alert(string message) {
 		Debug.Log (message);
+		notification.showToast(message);
 	}
 
 	enum GameStatus {
