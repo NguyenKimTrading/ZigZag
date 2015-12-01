@@ -16,7 +16,7 @@
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
-        <data android:scheme="nkzigzag://" />
+        <data android:scheme="nkzigzag" />
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.unity.FBUnityDeepLinkingActivity" android:exported="true" />
