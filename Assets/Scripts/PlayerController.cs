@@ -93,8 +93,8 @@ public class PlayerController : MonoBehaviour {
 			this.speed += this.acceleration * Time.deltaTime;
 		}
 
-		if (this._status == Status.Falling) {
-			if (transform.position.y < - 50f) {
+		if (this._status == Status.Falling || this._status == Status.Stoped) {
+			if (this.transform.position.y < - 50f) {
 				this.gameObject.SetActive(false);
 			}
 		}

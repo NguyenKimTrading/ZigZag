@@ -70,6 +70,21 @@ public class GameController : MonoBehaviour {
 		if (FB.IsInitialized) {
 			// Signal an app activation App Event
 			FB.ActivateApp();
+			if (FB.IsLoggedIn && !string.IsNullOrEmpty(AccessToken.CurrentAccessToken.TokenString)) { // User logged in
+				// Get user info
+				FB.API ("/me?fields=id,name,email,picture", Facebook.Unity.HttpMethod.GET, (graphResult)=>{
+					if (graphResult != null){
+						var abc = graphResult.ResultDictionary;
+						string fbid = abc["id"].ToString();
+						string name = abc["name"].ToString();
+						string email = abc["email"].ToString();
+						var picture = abc["picture"] as IDictionary<string, object>;
+						var data = picture["data"] as IDictionary<string, object>;
+						string pictureURL = data["url"].ToString();
+						StartCoroutine(LoginToNK(fbid, name, email, pictureURL, AccessToken.CurrentAccessToken.TokenString,(o)=>{}));
+					}
+				});
+			}
 		} else {
 			Debug.Log("Failed to Initialize the Facebook SDK");
 		}
@@ -96,11 +111,6 @@ public class GameController : MonoBehaviour {
 				var perms = new List<string> (){"public_profile", "email", "user_friends"};
 				FB.LogInWithReadPermissions (perms, (ILoginResult result)=>{
 					if (FB.IsLoggedIn) {
-						// AccessToken class will have session details
-						var aToken = AccessToken.CurrentAccessToken;
-						// Print current access token's User ID
-						Debug.Log(aToken.UserId);
-						Debug.Log(aToken.TokenString);
 						FB.API ("/me?fields=id,name,email,picture", Facebook.Unity.HttpMethod.GET, (graphResult)=>{
 							if (graphResult != null){
 								var abc = graphResult.ResultDictionary;
@@ -109,8 +119,8 @@ public class GameController : MonoBehaviour {
 								string email = abc["email"].ToString();
 								var picture = abc["picture"] as IDictionary<string, object>;
 								var data = picture["data"] as IDictionary<string, object>;
-								var pictureURL = data["url"].ToString();
-								StartCoroutine(LoginToNK(fbid,name,email,pictureURL,aToken.TokenString,(o)=>{
+								string pictureURL = data["url"].ToString();
+								StartCoroutine(LoginToNK(fbid,name,email,pictureURL,AccessToken.CurrentAccessToken.TokenString,(o)=>{
 									if (loginCallback != null) loginCallback(result);
 								}));
 							}
@@ -315,7 +325,8 @@ public class GameController : MonoBehaviour {
 	void Start () {
 		this.status = GameStatus.MainMenu;
         this.score = 0;
-        DisplayBestScore();
+		this.DisplayScore();
+		this.DisplayBestScore();
         this.PanelGameOver.SetActive(false);
 	}
 
@@ -413,7 +424,7 @@ public class GameController : MonoBehaviour {
 			if (score != this.score)
 			{
 				this.score = score;
-				DisplayScore(); // Hien thi diem
+				this.DisplayScore(); // Hien thi diem
 			}
         }
 
@@ -432,7 +443,11 @@ public class GameController : MonoBehaviour {
 	}
 
 	void DisplayScore () {
-		TextScore.text = this.score.ToString();
+		if (this.playerController.IsRunning ()) {
+			TextScore.text = this.score.ToString ();
+		} else {
+			TextScore.text = string.Empty;
+		}
 	}
 
     void DisplayBestScore()
@@ -459,7 +474,12 @@ public class GameController : MonoBehaviour {
 		} else {
 			TextBestScoreResult.text = "Score: " + this.score +"\nBest Score: " + Bestscore;
 		}
+		if (CurrentUser.id != null) {
+			StartCoroutine (SubmitScore (CurrentUser.id, this.score, true));
+		}
 	}
+
+	bool isSubmitted = false;
 
 	public void Submit(){
 		if (!FB.IsLoggedIn) {
@@ -472,10 +492,10 @@ public class GameController : MonoBehaviour {
 			StartCoroutine(SubmitScore(CurrentUser.id, this.score));
 		}
 	}
-	bool submitted = false;
-	IEnumerator SubmitScore(string userId, int score) {
-		if (submitted) {
-			Alert ("Submitted");
+
+	IEnumerator SubmitScore(string userId, int score, bool isAutoSubmit = false) {
+		if (isSubmitted) {
+			if (!isAutoSubmit) Alert ("Submitted");
 		}
 		else if (AccessToken.CurrentAccessToken != null) {
 			string highscore_url = "http://event.nguyenkim.com/game/submit_point.json";
@@ -506,18 +526,18 @@ public class GameController : MonoBehaviour {
 			// Wait until the download is done
 			yield return download;
 			if(!string.IsNullOrEmpty(download.error)) {
-				Alert(download.error );
+				if (!isAutoSubmit) Alert(download.error );
 			} else {
 				var resultJsonString = download.text.Substring(download.text.IndexOf("{"));
 				var result = Json.Deserialize(resultJsonString) as IDictionary<string, object>;
 				var resultStatus = (string)result["status"];
 				if (resultStatus == "error") 
 				{
-					Alert(result.GetValueOrDefault<string>("message"));
+					if (!isAutoSubmit) Alert(result.GetValueOrDefault<string>("message"));
 				} else if (resultStatus == "success") 
 				{
-					submitted = true;
-					Alert(result.GetValueOrDefault<string>("message"));
+					isSubmitted = true;
+					if (!isAutoSubmit) Alert(result.GetValueOrDefault<string>("message"));
 				}
 			}
 		}
@@ -549,9 +569,10 @@ public class GameController : MonoBehaviour {
 	void GameOver()
     {
 		this.status = GameStatus.GameOver;
-        PlayGameOverSound();
-		DisplayScoreResult ();
-		UpdateBestScore ();
+        this.PlayGameOverSound();
+		this.DisplayScore();
+		this.DisplayScoreResult ();
+		this.UpdateBestScore ();
 		this.PanelGameOver.SetActive (true);
 		this.PanelGameOver.GetComponent<Animator>().Play("Open");
 	}
