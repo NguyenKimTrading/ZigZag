@@ -171,7 +171,7 @@ public class GameController : MonoBehaviour {
 						Rect r = new Rect (0f,0f,pic.width,pic.height);
 						userPictureProfile.sprite = CurrentUser.pictureProfile = Sprite.Create(pic, r, v);
 						DisplayUserInfo();
-						Alert("Wellcom " + CurrentUser.name);
+						//Alert("Wellcom " + CurrentUser.name);
 						if (loginCallback != null) loginCallback(null);
 					}));
 				}
@@ -200,7 +200,7 @@ public class GameController : MonoBehaviour {
 		} else {
 			userPictureProfile.gameObject.SetActive (false);
 		}
-		if (FB.IsLoggedIn) {
+		if (!string.IsNullOrEmpty(CurrentUser.email)) {
 			var txt  = btnLogin.GetComponentInChildren(typeof(UnityEngine.UI.Text)) as UnityEngine.UI.Text;
 			if (txt!= null) txt.text = "Log out"; // Thay doi text cua button
 		} else {
@@ -308,6 +308,7 @@ public class GameController : MonoBehaviour {
 		CurrentUser.fbId = null;
 		CurrentUser.pictureProfile = userPictureProfileDefault;
 		DisplayUserInfo ();
+		Alert ("Logged out");
 	}
 	
 	// Use this for initialization
@@ -333,8 +334,8 @@ public class GameController : MonoBehaviour {
 		#endif
 
 		#if UNITY_ANDROID
-		//Application.OpenURL("market://details?id=com.nguyenkim.zigzag");
-		Application.OpenURL("https://play.google.com/store/apps/details?id=com.nguyenkim.zigzag");
+		Application.OpenURL("market://details?id=com.nguyenkim.zigzag");
+		//Application.OpenURL("https://play.google.com/store/apps/details?id=com.nguyenkim.zigzag");
 		#endif
 
 		#if UNITY_IOS
@@ -453,7 +454,7 @@ public class GameController : MonoBehaviour {
 	void DisplayScoreResult(){
 		int Bestscore = PlayerPrefs.GetInt(BEST_SCORE, 0);
 		if (this.score > Bestscore) {
-			TextBestScoreResult.text = "New Best Score: " + this.score;
+			TextBestScoreResult.text = "New Best Score\n" + this.score;
 			// Submit score to server
 		} else {
 			TextBestScoreResult.text = "Score: " + this.score +"\nBest Score: " + Bestscore;

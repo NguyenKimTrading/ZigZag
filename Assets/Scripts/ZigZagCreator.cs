@@ -5,10 +5,14 @@ public class ZigZagCreator : MonoBehaviour {
 
 	private IDictionary logger = null;
 
-	public Vector3 StartPoint = Vector3.zero;
-	public PlayerController playerController;
-
+	// He so do do zigzag
+	public float K = 0.1f;
+	// Khoang cach kich hoat tao cac khoi moi
+	public float PaddingDistance = 10f;
+	// Mau cac khoi duoc tao
 	public GameObject CubeTemplate;
+	// Player controller
+	public PlayerController playerController;
 	
     Vector3 nextPosition;
     Vector3 nextDirection;
@@ -25,10 +29,6 @@ public class ZigZagCreator : MonoBehaviour {
         nextPosition = new Vector3(5, 0, 3);
         nextDirection = Vector3.right;
 	}
-
-    // He so do do zigzag
-	public float K = 0.1f;
-	public float PaddingDistance = 10f;
 
 	private System.Collections.Generic.LinkedList<GameObject> cubePool = new System.Collections.Generic.LinkedList<GameObject>();
 
