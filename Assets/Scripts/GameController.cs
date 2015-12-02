@@ -331,7 +331,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void Replay() {
-        PlayTapSound();
+        //PlayTapSound();
 		Application.LoadLevel (Application.loadedLevel);
 	}
 
