@@ -38,6 +38,8 @@ public class GameController : MonoBehaviour {
 	public InputField infPhone;
 	public InputField infIdentifier;
 
+	public GameObject pnlOptions;
+
 	public Notification notification;
 
     private int score;
@@ -327,16 +329,13 @@ public class GameController : MonoBehaviour {
         this.score = 0;
 		this.DisplayScore();
 		this.DisplayBestScore();
+		this.playerController.gameObject.SetActive (false);
         this.PanelGameOver.SetActive(false);
 	}
 
 	public void Replay() {
         //PlayTapSound();
 		Application.LoadLevel (Application.loadedLevel);
-	}
-
-	public void Scoreboard(){
-
 	}
 
 	public void RateGame(){
@@ -369,6 +368,7 @@ public class GameController : MonoBehaviour {
 		this.status = GameStatus.Game;
 		this.TextTapToPlay.text = "Tap to play";
 		this.pnlMenu.SetActive (false);
+		this.playerController.gameObject.SetActive (true);
 		this.HideUserInfo ();
 		this.HideBestScore ();
 	}
@@ -637,6 +637,16 @@ public class GameController : MonoBehaviour {
 				Alert(result.GetValueOrDefault<string>("message"));
 			}
 		}
+	}
+
+	public void ShowOptionsPanel(){
+		this.pnlOptions.SetActive (true);
+		this.pnlMenu.SetActive (false);
+	}
+
+	public void HideOptionsPanel(){
+		this.pnlOptions.SetActive (false);
+		this.pnlMenu.SetActive (true);
 	}
 
     private void PlayGameOverSound()
